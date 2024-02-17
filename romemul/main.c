@@ -10,6 +10,7 @@
 #include "include/romemul.h"
 #include "include/floppyemul.h"
 #include "include/rtcemul.h"
+#include "include/netusbee.h"
 
 int main()
 {
@@ -176,6 +177,26 @@ int main()
             blink_morse('T');
 
             init_rtcemul(safe_config_reboot);
+
+            // You should never reach this line...
+        }
+
+        if (strcmp(default_config_entry->value, "NETUSBEE_EMULATOR") == 0)
+        {
+            DPRINTF("NETUSBEE_EMULATOR entry found in config. Launching.\n");
+
+            // Hybrid way to initialize the ROM emulator:
+            // IRQ handler callback to read the commands in ROM3, and NOT copy the FLASH ROMs to RAM
+            // and start the state machine
+            init_romemul(NULL, netusbee_dma_irq_handler_lookup_callback, false);
+
+            // Reserve memory for the protocol parser
+            init_protocol_parser();
+
+            printf("netusbee emulation started.\n"); // Print always
+            DPRINTF("Ready to accept commands.\n");
+
+            init_netusbee(safe_config_reboot);
 
             // You should never reach this line...
         }

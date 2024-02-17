@@ -49,6 +49,7 @@ target_sources(${PROJECT_NAME} PRIVATE config.c)
 target_sources(${PROJECT_NAME} PRIVATE network.c)
 target_sources(${PROJECT_NAME} PRIVATE filesys.c)
 target_sources(${PROJECT_NAME} PRIVATE rtcemul.c)
+target_sources(${PROJECT_NAME} PRIVATE netusbee.c)
 target_sources(${PROJECT_NAME} PRIVATE cJSON/cJSON.c)
 
 # Tell CMake where to find other source code

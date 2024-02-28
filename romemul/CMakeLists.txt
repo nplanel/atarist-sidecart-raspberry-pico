@@ -65,7 +65,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 #        pico_cyw43_arch_none     # we need Wifi to access the GPIO, but we don't need anything else
 #        pico_cyw43_arch_lwip_threadsafe_background # for lwip
         pico_cyw43_arch_lwip_poll
-#        pico_multicore                # for multicore functionality
+        pico_multicore                # for multicore functionality
         pico_lwip_http
         )
 

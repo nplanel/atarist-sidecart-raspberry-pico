@@ -236,7 +236,7 @@ void network_connect(bool force, bool async, char **pass)
     ConfigEntry *auth_mode = find_entry(PARAM_WIFI_AUTH);
     connection_status = CONNECTING;
     char *password_value = NULL;
-    if (*pass == NULL)
+    if (pass == NULL || *pass == NULL)
     {
         ConfigEntry *password = find_entry(PARAM_WIFI_PASSWORD);
         if (strlen(password->value) > 0)

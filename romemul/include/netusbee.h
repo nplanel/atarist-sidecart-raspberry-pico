@@ -27,6 +27,7 @@
 #include "time.h"
 
 #include "lwip/dns.h"
+#include "lwip/netif.h"
 #include "lwip/pbuf.h"
 #include "lwip/udp.h"
 
@@ -41,9 +42,22 @@
 extern int lookup_data_rom_dma_channel;
 
 // Interrupt handler callback for DMA completion
+void __not_in_flash_func(netusbee_dma_irq_handler_req_callback)(void);
 void __not_in_flash_func(netusbee_dma_irq_handler_lookup_callback)(void);
 
 // Function Prototypes
 int init_netusbee(bool safe_config_reboot);
+
+
+/////
+struct pkt {
+    uint16_t len;
+    uint8_t data[1514];
+};
+
+#define PKTBUFSZ 16
+extern int txpktcnt;
+extern struct pkt *txpktbuf;
+
 
 #endif // RTCEMUL_H

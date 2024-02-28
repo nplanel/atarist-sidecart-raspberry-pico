@@ -109,9 +109,12 @@
 ; Autopull enabled. Pull 16 bits from FIFO RX and put it in the bus
     out pins BUS_PINS               side NOT_READ_WRITE
 
+    wait INACTIVE gpio ROM3_GPIO
+    wait INACTIVE gpio ROM4_GPIO
+
 ; Wait a safe number of cycles before releasing the bus
-    nop side NOT_READ_WRITE [READ_ADDRESS_SAFE_WAIT_CYCLES]
-    nop side NOT_READ_WRITE [READ_ADDRESS_SAFE_WAIT_CYCLES]
+;    nop side NOT_READ_WRITE [READ_ADDRESS_SAFE_WAIT_CYCLES]
+;    nop side NOT_READ_WRITE [READ_ADDRESS_SAFE_WAIT_CYCLES]
 ;    nop side NOT_READ_WRITE [READ_ADDRESS_SAFE_WAIT_CYCLES]
 
 

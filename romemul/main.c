@@ -12,6 +12,27 @@
 #include "include/rtcemul.h"
 #include "include/netusbee.h"
 
+#include "pico/multicore.h"
+
+volatile int core1_start;
+void core1_entry() {
+    do {}while(!core1_start);
+
+            // Hybrid way to initialize the ROM emulator:
+            // IRQ handler callback to read the commands in ROM3, and NOT copy the FLASH ROMs to RAM
+            // and start the state machine
+            init_romemul(NULL, netusbee_dma_irq_handler_lookup_callback, false);
+
+            // Reserve memory for the protocol parser
+            init_protocol_parser();
+
+            printf("netusbee emulation started.\n"); // Print always
+            DPRINTF("Ready to accept commands.\n");
+
+            init_netusbee(false);
+
+}
+
 int main()
 {
     // Set the clock frequency. 20% overclocking
@@ -25,6 +46,9 @@ int main()
     gpio_set_dir(SELECT_GPIO, GPIO_IN);
     gpio_set_pulls(SELECT_GPIO, false, true); // Pull down (false, true)
     gpio_pull_down(SELECT_GPIO);
+
+    multicore_reset_core1();
+    multicore_launch_core1(core1_entry);
 
 #if _DEBUG
     // Initialize chosen serial port
@@ -53,6 +77,8 @@ int main()
     load_all_entries();
 
     ConfigEntry *default_config_entry = find_entry("BOOT_FEATURE");
+    
+    put_string("BOOT_FEATURE", "NETUSBEE_EMULATOR");
     DPRINTF("BOOT_FEATURE: %s\n", default_config_entry->value);
 
     ConfigEntry *default_config_reboot_mode = find_entry("SAFE_CONFIG_REBOOT");
@@ -184,20 +210,9 @@ int main()
         if (strcmp(default_config_entry->value, "NETUSBEE_EMULATOR") == 0)
         {
             DPRINTF("NETUSBEE_EMULATOR entry found in config. Launching.\n");
+            core1_start = 1;
 
-            // Hybrid way to initialize the ROM emulator:
-            // IRQ handler callback to read the commands in ROM3, and NOT copy the FLASH ROMs to RAM
-            // and start the state machine
-            init_romemul(NULL, netusbee_dma_irq_handler_lookup_callback, false);
-
-            // Reserve memory for the protocol parser
-            init_protocol_parser();
-
-            printf("netusbee emulation started.\n"); // Print always
-            DPRINTF("Ready to accept commands.\n");
-
-            init_netusbee(safe_config_reboot);
-
+            for(;;) {}
             // You should never reach this line...
         }
 
